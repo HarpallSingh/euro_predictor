@@ -9,8 +9,8 @@ def load_data(filepath):
 
 # Filter the data
 def filter_data(data):
-    historical_matches = data[data['match_status'] != 'not_started']
-    upcoming_matches = data[data['match_status'] == 'not_started']
+    historical_matches = data[data['match_status'] != 'not_started'].copy()
+    upcoming_matches = data[data['match_status'] == 'not_started'].copy()
     return historical_matches, upcoming_matches
 
 # Create a function to determine match outcome
@@ -24,7 +24,7 @@ def match_outcome(row):
 
 # Apply the function to historical matches
 def add_outcome_column(historical_matches):
-    historical_matches['outcome'] = historical_matches.apply(match_outcome, axis=1)
+    historical_matches.loc[:, 'outcome'] = historical_matches.apply(match_outcome, axis=1)
     return historical_matches
 
 # Calculate win rates for home and away teams
@@ -39,8 +39,8 @@ def team_stats(matches, team, location):
 
 # Add features to historical matches
 def add_features(historical_matches):
-    historical_matches['home_win_rate'] = historical_matches['home_name'].apply(lambda x: team_stats(historical_matches, x, 'home'))
-    historical_matches['away_win_rate'] = historical_matches['away_name'].apply(lambda x: team_stats(historical_matches, x, 'away'))
+    historical_matches.loc[:, 'home_win_rate'] = historical_matches['home_name'].apply(lambda x: team_stats(historical_matches, x, 'home'))
+    historical_matches.loc[:, 'away_win_rate'] = historical_matches['away_name'].apply(lambda x: team_stats(historical_matches, x, 'away'))
     return historical_matches
 
 # Prepare training data
@@ -62,8 +62,8 @@ def evaluate_model(model, X_test, y_test):
 
 # Add features to upcoming matches
 def add_upcoming_features(upcoming_matches, historical_matches):
-    upcoming_matches['home_win_rate'] = upcoming_matches['home_name'].apply(lambda x: team_stats(historical_matches, x, 'home'))
-    upcoming_matches['away_win_rate'] = upcoming_matches['away_name'].apply(lambda x: team_stats(historical_matches, x, 'away'))
+    upcoming_matches.loc[:, 'home_win_rate'] = upcoming_matches['home_name'].apply(lambda x: team_stats(historical_matches, x, 'home'))
+    upcoming_matches.loc[:, 'away_win_rate'] = upcoming_matches['away_name'].apply(lambda x: team_stats(historical_matches, x, 'away'))
     return upcoming_matches[['home_win_rate', 'away_win_rate']]
 
 # Predict outcomes for upcoming matches
@@ -103,7 +103,7 @@ def main():
     X_upcoming = add_upcoming_features(upcoming_matches, historical_matches)
 
     # Predict outcomes for upcoming matches
-    upcoming_matches['predicted_outcome'] = predict_outcomes(model, X_upcoming)
+    upcoming_matches.loc[:, 'predicted_outcome'] = predict_outcomes(model, X_upcoming)
 
     # Debugging: Print predictions for all upcoming matches
     print(upcoming_matches[['home_name', 'away_name', 'predicted_outcome']])
