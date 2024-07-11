@@ -74,7 +74,7 @@ def predict_outcomes(model, X_upcoming):
 
 def main():
     # Load data
-    filepath = '/Users/harpallpurewal/Desktop/Euro\ Predictor\ 2024/EM\ 2024\ pairings\ \(1\).csv'
+    filepath = r'EM 2024 pairings (1).csv'
     data = load_data(filepath)
 
     # Filter data
