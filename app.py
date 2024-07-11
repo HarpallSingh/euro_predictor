@@ -74,11 +74,15 @@ def predict_outcomes(model, X_upcoming):
 
 def main():
     # Load data
-    filepath = '/Users/harpallpurewal/Desktop/Euro\ Predictor\ 2024/EM\ 2024\ pairings\ \(1\).csv'
+    filepath = 'path_to_your_file.csv'
     data = load_data(filepath)
 
     # Filter data
     historical_matches, upcoming_matches = filter_data(data)
+
+    # Debugging: Print the shape of the datasets
+    print(f'Historical matches shape: {historical_matches.shape}')
+    print(f'Upcoming matches shape: {upcoming_matches.shape}')
 
     # Add outcome column to historical matches
     historical_matches = add_outcome_column(historical_matches)
@@ -101,8 +105,17 @@ def main():
     # Predict outcomes for upcoming matches
     upcoming_matches['predicted_outcome'] = predict_outcomes(model, X_upcoming)
 
-    # Print or save the predictions
+    # Debugging: Print predictions for all upcoming matches
     print(upcoming_matches[['home_name', 'away_name', 'predicted_outcome']])
+
+    # Print the predicted outcome for England vs Spain
+    match_england_spain = upcoming_matches[
+        (upcoming_matches['home_name'] == 'England') & (upcoming_matches['away_name'] == 'Spain')
+    ]
+    if not match_england_spain.empty:
+        print("Prediction for England vs Spain:", match_england_spain['predicted_outcome'].values[0])
+    else:
+        print("Match England vs Spain not found in upcoming matches.")
 
 if __name__ == "__main__":
     main()
